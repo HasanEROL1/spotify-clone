@@ -1,5 +1,3 @@
-const url = "https://shazam.p.rapidapi.com/search?term=adele&locale=en-US";
-
 const options = {
   method: "GET",
   headers: {
@@ -7,34 +5,51 @@ const options = {
     "x-rapidapi-host": "shazam.p.rapidapi.com",
   },
 };
-//Api Clası
 
 export class API {
-  //popüler müzikler apidan çekildi
   async getPopular() {
-    // const res = await fetch(url, options);
-
-    // const data = await res.json();
-    // const formatted = data.tracks.hits.map((item) => item.track);
-    // // console.log(formatted);
-
-    // return formatted;
-    const data = await this.searchMusics("neffex");
-    const data1 = await this.searchMusics("eminem");
-
-    return [...data, ...data1]; // iki arama sonucunu birleştirip döndürdük
+    try {
+      const data = await this.searchMusics("neffex");
+      const data1 = await this.searchMusics("eminem");
+      return [...data, ...data1];
+    } catch (err) {
+      console.error("Popüler müzikler çekilirken hata:", err);
+      return [];
+    }
   }
-  // aratılan müzikleri api dan alma
-
   async searchMusics(query) {
-    // urli dinamik hale getirdik
-    const url = `https://shazam.p.rapidapi.com/search?term=${query}&locale=en-US";`;
+    const url = `https://shazam.p.rapidapi.com/v2/search?term=${encodeURIComponent(query)}&locale=en-US`;
 
-    // api istek at
     const res = await fetch(url, options);
     const data = await res.json();
-    const formatted = data.tracks.hits.map((item) => item.track);
+
+    console.log(`${query} için gelen ham veri:`, data);
+
+    // YENİ YAPI: v2'de şarkılar results.songs.data içinde geliyor
+    // Eğer bu yapı yoksa boş dizi döndür ki hata vermesin
+    const songs = data?.results?.songs?.data || [];
+
+    // Veriyi render fonksiyonuna uygun hale getiriyoruz
+    const formatted = songs.map((song) => ({
+      // Kendi kodundaki değişken isimlerine göre burayı kontrol et (title, subtitle vb.)
+      title: song.attributes.name,
+      subtitle: song.attributes.artistName,
+      images: {
+        coverart: song.attributes.artwork.url.replace('{w}', '400').replace('{h}', '400'),
+      },
+      mp3: song.attributes.previews?.[0]?.url || "", // Önizleme URL'si, yoksa boş string
+      hub: {
+        actions: [
+          { uri: song.attributes.url } // Eğer tıklayınca gitmesini istiyorsan
+        ]
+      }
+    }));
+
+    if (formatted.length === 0) {
+      console.warn(`${query} için sonuç bulunamadı. Yapı hala uyuşmuyor olabilir.`);
+    }
 
     return formatted;
   }
+
 }

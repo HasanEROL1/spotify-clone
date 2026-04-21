@@ -20,23 +20,23 @@ export class UI {
       card.dataset.title = song.title;
       card.dataset.title = song.subtitle;
       card.dataset.img = song.images.coverarthq;
-      card.dataset.mp3 = song.hub.actions[1].uri;
+      card.dataset.mp3 = song.mp3 || ""; // Eğer mp3 yoksa boş string atıyoruz
 
       //card içeriği
       card.innerHTML = `
-     
+
                         <figure>
-                            <img src="${song.images.coverarthq}" alt="artist foto"/>
+                            <img src="${song.images.coverart}" alt="artist foto"/>
                             <div class="play">
-                    <i class="bi bi-play-fill"></i> 
+                    <i class="bi bi-play-fill"></i>
                     </div></figure>
-                       
+
                         <div class="card-info">
-                            <h4>${song.title}</h4>
+                           <h4>${this.sliceText(song.title)}</h4>
                             <h4>${song.subtitle}</h4>
                         </div>
-                    
-      
+
+
       `;
 
       //cardı html içerisine yerleştir
@@ -45,7 +45,7 @@ export class UI {
   }
   // /LOader basma
   renderLoader() {
-    this.list.innerHTML = ` 
+    this.list.innerHTML = `
     <div class="loader">
       <div class="cell d-0"></div>
       <div class="cell d-1"></div>
@@ -81,12 +81,12 @@ export class UI {
                 <p>${song.subtitle}</p>
             </div>
         </div>
-       
+
         <audio autoplay
             src="${song.mp3}"
             controls>
         </audio>
-       
+
         <div class="icons">
             <i class="bi bi-music-note-list"></i>
             <i class="bi bi-boombox-fill"></i>
@@ -98,8 +98,12 @@ export class UI {
     audio.addEventListener("pause", this.toggleAnimation);
   }
   // resim animasyonunu dinamik şekilde ekle-çıkar yapan fonksiyon
+  // resim animasyonunu dinamik şekilde ekle-çıkar yapan fonksiyon
   toggleAnimation() {
     const image = document.querySelector(".info img");
-    image.classList.toggle("animate");
+    // Eğer resim oradaysa animasyonu aç/kapat, yoksa hata verme
+    if (image) {
+      image.classList.toggle("animate");
+    }
   }
 }
