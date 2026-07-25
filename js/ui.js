@@ -18,8 +18,8 @@ export class UI {
 
       // card elemanına şarkı verilerini aktar
       card.dataset.title = song.title;
-      card.dataset.title = song.subtitle;
-      card.dataset.img = song.images.coverarthq;
+      card.dataset.subtitle = song.subtitle;
+      card.dataset.img = song.images?.coverarthq || song.images.coverart
       card.dataset.mp3 = song.mp3 || ""; // Eğer mp3 yoksa boş string atıyoruz
 
       //card içeriği
@@ -74,7 +74,7 @@ export class UI {
   renderPlayer(song) {
     this.player.innerHTML = `
      <div class="info">
-            <img src="${song.img}"
+            <img src=${song.img}
                 alt="">
             <div>
                 <h5>${song.title}</h5>
@@ -83,8 +83,9 @@ export class UI {
         </div>
 
         <audio autoplay
-            src="${song.mp3}"
-            controls>
+         controls
+        src="${song.mp3}"
+            >
         </audio>
 
         <div class="icons">
@@ -94,13 +95,13 @@ export class UI {
         </div>
   `;
     const audio = this.player.querySelector("audio");
-    audio.addEventListener("play", this.toggleAnimation);
-    audio.addEventListener("pause", this.toggleAnimation);
+    audio.addEventListener("play",() => this.toggleAnimation());
+    audio.addEventListener("pause", ()=> this.toggleAnimation());
   }
-  // resim animasyonunu dinamik şekilde ekle-çıkar yapan fonksiyon
-  // resim animasyonunu dinamik şekilde ekle-çıkar yapan fonksiyon
+ 
+
   toggleAnimation() {
-    const image = document.querySelector(".info img");
+    const image = document.querySelector(".player .info img");
     // Eğer resim oradaysa animasyonu aç/kapat, yoksa hata verme
     if (image) {
       image.classList.toggle("animate");

@@ -9,8 +9,8 @@ const options = {
 export class API {
   async getPopular() {
     try {
-      const data = await this.searchMusics("neffex");
-      const data1 = await this.searchMusics("eminem");
+      const data = await this.searchMusics("tarkan");
+      const data1 = await this.searchMusics("barış manço");
       return [...data, ...data1];
     } catch (err) {
       console.error("Popüler müzikler çekilirken hata:", err);
@@ -35,7 +35,7 @@ export class API {
       title: song.attributes.name,
       subtitle: song.attributes.artistName,
       images: {
-        coverart: song.attributes.artwork.url.replace('{w}', '400').replace('{h}', '400'),
+        coverart:song.attributes.artwork.url.replace('{w}', '400').replace('{h}', '400'),
       },
       mp3: song.attributes.previews?.[0]?.url || "", // Önizleme URL'si, yoksa boş string
       hub: {
